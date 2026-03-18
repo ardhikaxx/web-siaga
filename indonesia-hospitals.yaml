@@ -1,0 +1,1085 @@
+openapi: 3.0.0
+info:
+  title: Api Data Rumah Sakit Indonesia
+  description: >-
+    Complete API collection for accessing Indonesian hospital data from SIRS (Sistem Informasi Rumah Sakit).
+
+
+    ## Features
+
+    - List hospitals with comprehensive filters
+
+    - Get hospital details by code
+
+    - Filter by hospital type, class, ownership, and BLU status
+
+    - Search hospitals by name
+
+    - Filter by province and regency
+
+    - Get metadata (types, classes, ownership, BLU status)
+
+    - Pagination support
+
+
+    ## Authentication
+
+    All requests require an API key in the `x-api-co-id` header.
+
+
+    ## Base URL
+
+    ```
+    https://use.api.co.id/hospitals/indonesia
+    ```
+
+
+    ## Data Structure
+
+    Each hospital includes:
+
+    - Basic information (code, name, address, phone)
+
+    - Classification (type, class, blu_status, ownership)
+
+    - Facilities (land_area, building_area, total_beds)
+
+    - Beds breakdown (class_i, class_ii, class_iii, hcu, perinatology, icu_with_ventilator)
+
+    - Services (count and list of services)
+
+    - Human resources (total staff, general_practitioner, basic_specialist, other_specialist)
+
+    - Province and regency codes
+
+    - Scraped timestamp
+
+
+    ## Filtering Options
+
+    - `code`: Filter by hospital code
+
+    - `name`: Search by hospital name (case-insensitive partial match)
+
+    - `type`: Filter by hospital type
+
+    - `class`: Filter by hospital class (A, B, C, D)
+
+    - `blu_status`: Filter by BLU status
+
+    - `ownership`: Filter by ownership type
+
+    - `province_code`: Filter by province code
+
+    - `regency_code`: Filter by regency code
+
+    - `page`: Page number (default: 1)
+
+    - `size`: Page size (default: 100, max: 100)
+  version: 1.0.0
+servers:
+  - url: https://use.api.co.id
+tags:
+  - name: Hospitals
+    description: Core endpoints for accessing Indonesian hospital data.
+  - name: Filters
+    description: Endpoints for filtering hospitals by various criteria.
+  - name: Metadata
+    description: Endpoints for retrieving available filter values.
+paths:
+  /hospitals/indonesia/:
+    get:
+      tags:
+        - Hospitals
+      summary: List All Hospitals
+      description: >-
+        Get all hospitals with pagination. Returns up to 100 hospitals per page.
+
+
+        ### Query Parameters
+
+        - `page` (optional): Page number (default: 1)
+
+        - `size` (optional): Page size (default: 100, max: 100)
+
+        - `code` (optional): Filter by hospital code
+
+        - `name` (optional): Search by hospital name (case-insensitive partial match)
+
+        - `type` (optional): Filter by hospital type
+
+        - `class` (optional): Filter by hospital class
+
+        - `blu_status` (optional): Filter by BLU status
+
+        - `ownership` (optional): Filter by ownership type
+
+        - `province_code` (optional): Filter by province code
+
+        - `regency_code` (optional): Filter by regency code
+
+
+        ### Examples
+
+        ```bash
+        # Get first page
+        GET /hospitals/indonesia/?page=1&size=100
+
+        # Search by name
+        GET /hospitals/indonesia/?name=RSUD
+
+        # Filter by type
+        GET /hospitals/indonesia/?type=Rumah Sakit Umum
+
+        # Filter by class
+        GET /hospitals/indonesia/?class=A
+        ```
+      parameters:
+        - name: x-api-co-id
+          in: header
+          schema:
+            type: string
+          description: Your API key for authentication
+          required: true
+          example: '{{api_key}}'
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number (default 1)
+          required: false
+          example: 1
+        - name: size
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 100
+          description: Page size (default 100, max 100)
+          required: false
+          example: 100
+        - name: code
+          in: query
+          schema:
+            type: string
+          description: Filter by hospital code
+          required: false
+        - name: name
+          in: query
+          schema:
+            type: string
+          description: Search by hospital name (case-insensitive partial match)
+          required: false
+          example: RSUD
+        - name: type
+          in: query
+          schema:
+            type: string
+          description: Filter by hospital type
+          required: false
+          example: Rumah Sakit Umum
+        - name: class
+          in: query
+          schema:
+            type: string
+            enum:
+              - A
+              - B
+              - C
+              - D
+          description: Filter by hospital class (A, B, C, D)
+          required: false
+          example: A
+        - name: blu_status
+          in: query
+          schema:
+            type: string
+          description: Filter by BLU status
+          required: false
+          example: BLUD
+        - name: ownership
+          in: query
+          schema:
+            type: string
+          description: Filter by ownership type
+          required: false
+          example: Pemkab
+        - name: province_code
+          in: query
+          schema:
+            type: string
+          description: Filter by province code (2 digits)
+          required: false
+          example: '11'
+        - name: regency_code
+          in: query
+          schema:
+            type: string
+          description: Filter by regency code (4 digits)
+          required: false
+          example: '1113'
+      responses:
+        '200':
+          description: Success - List Hospitals
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HospitalListResponse'
+              examples:
+                success:
+                  summary: Success - List Hospitals
+                  value:
+                    is_success: true
+                    message: Success
+                    data:
+                      - code: '1113012'
+                        name: RS Umum Muhammad Ali Kasim
+                        address: Jalan Pangur
+                        phone: null
+                        type: Rumah Sakit Umum
+                        class: C
+                        blu_status: BLUD
+                        ownership: Pemkab
+                        director: dr. SRI AGUSTI, M.Ked.,Sp.KJ
+                        facilities:
+                          land_area: 99.652 M2
+                          building_area: '-'
+                          total_beds: 126
+                        beds:
+                          class_i: 14
+                          class_ii: 12
+                          class_iii: 68
+                          hcu: 4
+                          perinatology: 20
+                          icu_with_ventilator: 8
+                        services:
+                          count: 10
+                          list:
+                            - Pelayanan medik dasar / umum
+                            - Pelayanan medik gigi mulut
+                            - Pelayanan KIA/KB
+                            - Pelayanan Gawat Darurat Umum 24 jam & 7 hari seminggu
+                            - Penyakit dalam
+                            - Kesehatan anak
+                            - Bedah
+                            - Obstetri dan ginekologi
+                            - Anestesi
+                            - Radiologi
+                        staff:
+                          total: 56
+                          general_practitioner: 38.0
+                          basic_specialist: 11.0
+                          other_specialist: 7.0
+                        province_code: '11'
+                        regency_code: '1113'
+                        scraped_at: '2026-01-25T14:26:04.857537'
+                    paging:
+                      page: 1
+                      size: 100
+                      total_item: 3291
+                      total_page: 33
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                badRequest:
+                  summary: Error - Bad Request
+                  value:
+                    is_success: false
+                    message: Invalid request parameters
+                    data: null
+        '401':
+          description: Unauthorized - Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                unauthorized:
+                  summary: Error - Unauthorized
+                  value:
+                    is_success: false
+                    message: Unauthorized - Invalid or missing API key
+                    data: null
+        '429':
+          description: Too Many Requests - Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                rateLimitExceeded:
+                  summary: Rate Limit Exceeded
+                  value:
+                    is_success: false
+                    message: Rate limit exceeded. Please try again later
+                    data: null
+  /hospitals/indonesia/{code}:
+    get:
+      tags:
+        - Hospitals
+      summary: Get Hospital by Code
+      description: >-
+        Get detailed information about a specific hospital by its code.
+
+
+        ### Path Parameters
+
+        - `code` (required): Hospital code from SIRS
+
+
+        ### Example
+
+        ```bash
+        GET /hospitals/indonesia/1113012
+        ```
+      parameters:
+        - name: x-api-co-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Your API key for authentication
+          example: '{{api_key}}'
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Hospital code from SIRS
+          example: '1113012'
+      responses:
+        '200':
+          description: Success - Hospital Details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HospitalDetailResponse'
+              examples:
+                success:
+                  summary: Success - Hospital Details
+                  value:
+                    is_success: true
+                    message: Success
+                    data:
+                      code: '1113012'
+                      name: RS Umum Muhammad Ali Kasim
+                      address: Jalan Pangur
+                      phone: null
+                      type: Rumah Sakit Umum
+                      class: C
+                      blu_status: BLUD
+                      ownership: Pemkab
+                      director: dr. SRI AGUSTI, M.Ked.,Sp.KJ
+                      facilities:
+                        land_area: 99.652 M2
+                        building_area: '-'
+                        total_beds: 126
+                      beds:
+                        class_i: 14
+                        class_ii: 12
+                        class_iii: 68
+                        hcu: 4
+                        perinatology: 20
+                        icu_with_ventilator: 8
+                      services:
+                        count: 10
+                        list:
+                          - Pelayanan medik dasar / umum
+                          - Pelayanan medik gigi mulut
+                          - Pelayanan KIA/KB
+                          - Pelayanan Gawat Darurat Umum 24 jam & 7 hari seminggu
+                          - Penyakit dalam
+                          - Kesehatan anak
+                          - Bedah
+                          - Obstetri dan ginekologi
+                          - Anestesi
+                          - Radiologi
+                      staff:
+                        total: 56
+                        general_practitioner: 38.0
+                        basic_specialist: 11.0
+                        other_specialist: 7.0
+                      province_code: '11'
+                      regency_code: '1113'
+                      scraped_at: '2026-01-25T14:26:04.857537'
+        '401':
+          description: Unauthorized - Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                unauthorized:
+                  summary: Error - Unauthorized
+                  value:
+                    is_success: false
+                    message: Unauthorized - Invalid or missing API key
+                    data: null
+        '404':
+          description: Not Found - Hospital not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                notFound:
+                  summary: Error - Hospital Not Found
+                  value:
+                    is_success: false
+                    message: hospital not found
+                    data: null
+        '429':
+          description: Too Many Requests - Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                rateLimitExceeded:
+                  summary: Rate Limit Exceeded
+                  value:
+                    is_success: false
+                    message: Rate limit exceeded. Please try again later
+                    data: null
+  /hospitals/indonesia/types:
+    get:
+      tags:
+        - Metadata
+      summary: Get All Types
+      description: >-
+        Get all distinct hospital types available in the database.
+
+
+        ### Response
+
+        Returns a list of all unique hospital types that can be used for filtering.
+
+
+        ### Example
+
+        ```bash
+        GET /hospitals/indonesia/types
+        ```
+      parameters:
+        - name: x-api-co-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Your API key for authentication
+          example: '{{api_key}}'
+      responses:
+        '200':
+          description: Success - Hospital Types
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TypesResponse'
+              examples:
+                success:
+                  summary: Success - Hospital Types
+                  value:
+                    is_success: true
+                    message: Success
+                    data:
+                      types:
+                        - Rumah Sakit Umum
+                        - Rumah Sakit Khusus
+                        - Rumah Sakit Jiwa
+                        - Rumah Sakit Ibu dan Anak
+                      count: 4
+        '401':
+          description: Unauthorized - Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                unauthorized:
+                  summary: Error - Unauthorized
+                  value:
+                    is_success: false
+                    message: Unauthorized - Invalid or missing API key
+                    data: null
+        '429':
+          description: Too Many Requests - Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                rateLimitExceeded:
+                  summary: Rate Limit Exceeded
+                  value:
+                    is_success: false
+                    message: Rate limit exceeded. Please try again later
+                    data: null
+  /hospitals/indonesia/classes:
+    get:
+      tags:
+        - Metadata
+      summary: Get All Classes
+      description: >-
+        Get all distinct hospital classes available in the database.
+
+
+        ### Response
+
+        Returns a list of all unique hospital classes (A, B, C, D) that can be used for filtering.
+
+
+        ### Classes
+
+        - A: Highest class
+
+        - B: High class
+
+        - C: Medium class
+
+        - D: Basic class
+
+
+        ### Example
+
+        ```bash
+        GET /hospitals/indonesia/classes
+        ```
+      parameters:
+        - name: x-api-co-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Your API key for authentication
+          example: '{{api_key}}'
+      responses:
+        '200':
+          description: Success - Hospital Classes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClassesResponse'
+              examples:
+                success:
+                  summary: Success - Hospital Classes
+                  value:
+                    is_success: true
+                    message: Success
+                    data:
+                      classes:
+                        - A
+                        - B
+                        - C
+                        - D
+                      count: 4
+        '401':
+          description: Unauthorized - Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                unauthorized:
+                  summary: Error - Unauthorized
+                  value:
+                    is_success: false
+                    message: Unauthorized - Invalid or missing API key
+                    data: null
+        '429':
+          description: Too Many Requests - Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                rateLimitExceeded:
+                  summary: Rate Limit Exceeded
+                  value:
+                    is_success: false
+                    message: Rate limit exceeded. Please try again later
+                    data: null
+  /hospitals/indonesia/ownership:
+    get:
+      tags:
+        - Metadata
+      summary: Get All Ownership
+      description: >-
+        Get all distinct ownership types available in the database.
+
+
+        ### Response
+
+        Returns a list of all unique ownership types that can be used for filtering.
+
+
+        ### Common Ownership Types
+
+        - Pemkab (Pemerintah Kabupaten)
+
+        - Pemkot (Pemerintah Kota)
+
+        - Pemprov (Pemerintah Provinsi)
+
+        - Swasta
+
+        - TNI/Polri
+
+
+        ### Example
+
+        ```bash
+        GET /hospitals/indonesia/ownership
+        ```
+      parameters:
+        - name: x-api-co-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Your API key for authentication
+          example: '{{api_key}}'
+      responses:
+        '200':
+          description: Success - Ownership Types
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OwnershipResponse'
+              examples:
+                success:
+                  summary: Success - Ownership Types
+                  value:
+                    is_success: true
+                    message: Success
+                    data:
+                      ownership:
+                        - Pemkab
+                        - Pemkot
+                        - Pemprov
+                        - Swasta
+                        - TNI/Polri
+                      count: 5
+        '401':
+          description: Unauthorized - Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                unauthorized:
+                  summary: Error - Unauthorized
+                  value:
+                    is_success: false
+                    message: Unauthorized - Invalid or missing API key
+                    data: null
+        '429':
+          description: Too Many Requests - Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                rateLimitExceeded:
+                  summary: Rate Limit Exceeded
+                  value:
+                    is_success: false
+                    message: Rate limit exceeded. Please try again later
+                    data: null
+  /hospitals/indonesia/blu-status:
+    get:
+      tags:
+        - Metadata
+      summary: Get All BLU Status
+      description: >-
+        Get all distinct BLU (Badan Layanan Umum) statuses available in the database.
+
+
+        ### Response
+
+        Returns a list of all unique BLU statuses that can be used for filtering.
+
+
+        ### Common BLU Statuses
+
+        - BLUD: Badan Layanan Umum Daerah
+
+        - Non BLUD: Not a BLU
+
+
+        ### Example
+
+        ```bash
+        GET /hospitals/indonesia/blu-status
+        ```
+      parameters:
+        - name: x-api-co-id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Your API key for authentication
+          example: '{{api_key}}'
+      responses:
+        '200':
+          description: Success - BLU Statuses
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BluStatusResponse'
+              examples:
+                success:
+                  summary: Success - BLU Statuses
+                  value:
+                    is_success: true
+                    message: Success
+                    data:
+                      blu_status:
+                        - BLUD
+                        - Non BLUD
+                      count: 2
+        '401':
+          description: Unauthorized - Invalid or missing API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                unauthorized:
+                  summary: Error - Unauthorized
+                  value:
+                    is_success: false
+                    message: Unauthorized - Invalid or missing API key
+                    data: null
+        '429':
+          description: Too Many Requests - Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                rateLimitExceeded:
+                  summary: Rate Limit Exceeded
+                  value:
+                    is_success: false
+                    message: Rate limit exceeded. Please try again later
+                    data: null
+components:
+  schemas:
+    Hospital:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Hospital code from SIRS
+          example: '1113012'
+        name:
+          type: string
+          description: Hospital name
+          example: RS Umum Muhammad Ali Kasim
+        address:
+          type: string
+          description: Hospital address
+          example: Jalan Pangur
+        phone:
+          type: string
+          nullable: true
+          description: Hospital phone number
+          example: null
+        type:
+          type: string
+          description: Hospital type
+          example: Rumah Sakit Umum
+        class:
+          type: string
+          description: Hospital class (A, B, C, D)
+          example: C
+        blu_status:
+          type: string
+          description: BLU status
+          example: BLUD
+        ownership:
+          type: string
+          description: Ownership type
+          example: Pemkab
+        director:
+          type: string
+          description: Hospital director name
+          example: dr. SRI AGUSTI, M.Ked.,Sp.KJ
+        facilities:
+          type: object
+          properties:
+            land_area:
+              type: string
+              description: Land area
+              example: 99.652 M2
+            building_area:
+              type: string
+              description: Building area
+              example: '-'
+            total_beds:
+              type: integer
+              description: Total number of beds
+              example: 126
+        beds:
+          type: object
+          properties:
+            class_i:
+              type: integer
+              description: Number of class I beds
+              example: 14
+            class_ii:
+              type: integer
+              description: Number of class II beds
+              example: 12
+            class_iii:
+              type: integer
+              description: Number of class III beds
+              example: 68
+            hcu:
+              type: integer
+              description: Number of HCU beds
+              example: 4
+            perinatology:
+              type: integer
+              description: Number of perinatology beds
+              example: 20
+            icu_with_ventilator:
+              type: integer
+              description: Number of ICU beds with ventilator
+              example: 8
+        services:
+          type: object
+          properties:
+            count:
+              type: integer
+              description: Number of services
+              example: 10
+            list:
+              type: array
+              items:
+                type: string
+              description: List of services
+              example:
+                - Pelayanan medik dasar / umum
+                - Pelayanan medik gigi mulut
+                - Pelayanan KIA/KB
+        staff:
+          type: object
+          properties:
+            total:
+              type: integer
+              description: Total staff count
+              example: 56
+            general_practitioner:
+              type: number
+              description: Number of general practitioners
+              example: 38.0
+            basic_specialist:
+              type: number
+              description: Number of basic specialists
+              example: 11.0
+            other_specialist:
+              type: number
+              description: Number of other specialists
+              example: 7.0
+        province_code:
+          type: string
+          description: Province code
+          example: '11'
+        regency_code:
+          type: string
+          description: Regency code
+          example: '1113'
+        scraped_at:
+          type: string
+          format: date-time
+          description: Timestamp when data was scraped
+          example: '2026-01-25T14:26:04.857537'
+    HospitalListResponse:
+      type: object
+      properties:
+        is_success:
+          type: boolean
+          description: Indicates if the request was successful
+          example: true
+        message:
+          type: string
+          description: Response message
+          example: Success
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Hospital'
+        paging:
+          type: object
+          properties:
+            page:
+              type: integer
+              description: Current page number
+              example: 1
+            size:
+              type: integer
+              description: Page size
+              example: 100
+            total_item:
+              type: integer
+              description: Total number of items
+              example: 3291
+            total_page:
+              type: integer
+              description: Total number of pages
+              example: 33
+    HospitalDetailResponse:
+      type: object
+      properties:
+        is_success:
+          type: boolean
+          description: Indicates if the request was successful
+          example: true
+        message:
+          type: string
+          description: Response message
+          example: Success
+        data:
+          $ref: '#/components/schemas/Hospital'
+    TypesResponse:
+      type: object
+      properties:
+        is_success:
+          type: boolean
+          description: Indicates if the request was successful
+          example: true
+        message:
+          type: string
+          description: Response message
+          example: Success
+        data:
+          type: object
+          properties:
+            types:
+              type: array
+              items:
+                type: string
+              description: List of hospital types
+              example:
+                - Rumah Sakit Umum
+                - Rumah Sakit Khusus
+                - Rumah Sakit Jiwa
+                - Rumah Sakit Ibu dan Anak
+            count:
+              type: integer
+              description: Number of types
+              example: 4
+    ClassesResponse:
+      type: object
+      properties:
+        is_success:
+          type: boolean
+          description: Indicates if the request was successful
+          example: true
+        message:
+          type: string
+          description: Response message
+          example: Success
+        data:
+          type: object
+          properties:
+            classes:
+              type: array
+              items:
+                type: string
+              description: List of hospital classes
+              example:
+                - A
+                - B
+                - C
+                - D
+            count:
+              type: integer
+              description: Number of classes
+              example: 4
+    OwnershipResponse:
+      type: object
+      properties:
+        is_success:
+          type: boolean
+          description: Indicates if the request was successful
+          example: true
+        message:
+          type: string
+          description: Response message
+          example: Success
+        data:
+          type: object
+          properties:
+            ownership:
+              type: array
+              items:
+                type: string
+              description: List of ownership types
+              example:
+                - Pemkab
+                - Pemkot
+                - Pemprov
+                - Swasta
+                - TNI/Polri
+            count:
+              type: integer
+              description: Number of ownership types
+              example: 5
+    BluStatusResponse:
+      type: object
+      properties:
+        is_success:
+          type: boolean
+          description: Indicates if the request was successful
+          example: true
+        message:
+          type: string
+          description: Response message
+          example: Success
+        data:
+          type: object
+          properties:
+            blu_status:
+              type: array
+              items:
+                type: string
+              description: List of BLU statuses
+              example:
+                - BLUD
+                - Non BLUD
+            count:
+              type: integer
+              description: Number of BLU statuses
+              example: 2
+    ErrorResponse:
+      type: object
+      properties:
+        is_success:
+          type: boolean
+          description: Indicates if the request was successful
+          example: false
+        message:
+          type: string
+          description: Error message
+          example: hospital not found
+        data:
+          type: 'null'
+          description: Null for error responses
+          example: null
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-co-id
+      description: Your API key for authentication
+security:
+  - ApiKeyAuth: []

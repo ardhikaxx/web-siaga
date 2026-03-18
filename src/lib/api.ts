@@ -1,4 +1,3 @@
-import { API_BASE_URL, API_KEY } from './constants';
 import type { 
   HospitalListResponse, 
   HospitalDetailResponse, 
@@ -7,6 +6,9 @@ import type {
   ClassesResponse,
   OwnershipResponse
 } from '@/types/hospital';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://use.api.co.id';
+const API_KEY = process.env.NEXT_PUBLIC_API_KEY || '8Ap2vvrQceHOTD9s2aYk5rIRLb8EylBZzapHQTJ9LoTTaeefC4';
 
 const headers = {
   'x-api-co-id': API_KEY,
@@ -31,7 +33,9 @@ export async function fetchHospitals(options: FilterOptions = {}): Promise<Hospi
   );
 
   if (!response.ok) {
-    throw new Error('Failed to fetch hospitals');
+    const errorText = await response.text();
+    console.error('API Error:', response.status, errorText);
+    throw new Error(`Failed to fetch hospitals: ${response.status}`);
   }
 
   return response.json();
@@ -51,40 +55,76 @@ export async function fetchHospitalByCode(code: string): Promise<HospitalDetailR
 }
 
 export async function fetchHospitalTypes(): Promise<TypesResponse> {
-  const response = await fetch(
-    `${API_BASE_URL}/hospitals/indonesia/types`,
-    { headers, next: { revalidate: 3600 } }
-  );
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/hospitals/indonesia/types`,
+      { headers, next: { revalidate: 3600 } }
+    );
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch hospital types');
+    if (!response.ok) {
+      throw new Error('Failed to fetch hospital types');
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error('Error fetching types:', error);
+    return {
+      is_success: true,
+      message: 'Success (fallback)',
+      data: {
+        types: ['Rumah Sakit Umum', 'Rumah Sakit Khusus', 'Rumah Sakit Jiwa', 'Rumah Sakit Ibu dan Anak'],
+        count: 4
+      }
+    };
   }
-
-  return response.json();
 }
 
 export async function fetchHospitalClasses(): Promise<ClassesResponse> {
-  const response = await fetch(
-    `${API_BASE_URL}/hospitals/indonesia/classes`,
-    { headers, next: { revalidate: 3600 } }
-  );
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/hospitals/indonesia/classes`,
+      { headers, next: { revalidate: 3600 } }
+    );
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch hospital classes');
+    if (!response.ok) {
+      throw new Error('Failed to fetch hospital classes');
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error('Error fetching classes:', error);
+    return {
+      is_success: true,
+      message: 'Success (fallback)',
+      data: {
+        classes: ['A', 'B', 'C', 'D'],
+        count: 4
+      }
+    };
   }
-
-  return response.json();
 }
 
 export async function fetchHospitalOwnership(): Promise<OwnershipResponse> {
-  const response = await fetch(
-    `${API_BASE_URL}/hospitals/indonesia/ownership`,
-    { headers, next: { revalidate: 3600 } }
-  );
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/hospitals/indonesia/ownership`,
+      { headers, next: { revalidate: 3600 } }
+    );
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch ownership types');
+    if (!response.ok) {
+      throw new Error('Failed to fetch ownership types');
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error('Error fetching ownership:', error);
+    return {
+      is_success: true,
+      message: 'Success (fallback)',
+      data: {
+        ownership: ['Pemkab', 'Pemkot', 'Pemprov', 'Swasta', 'TNI/Polri'],
+        count: 5
+      }
+    };
   }
-
-  return response.json();
 }

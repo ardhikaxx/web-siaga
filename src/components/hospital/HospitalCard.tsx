@@ -1,16 +1,30 @@
 import Link from 'next/link';
-import { MapPin, Phone, Bed, Users, Building2 } from 'lucide-react';
+import { MapPin, Phone, Bed, Users, Building2, Navigation } from 'lucide-react';
 import { Badge, getClassBadgeVariant } from '@/components/ui/Badge';
 import type { Hospital } from '@/types/hospital';
+import { formatDistance } from '@/hooks/useGeolocation';
 
 interface HospitalCardProps {
   hospital: Hospital;
+  userLatitude?: number | null;
+  userLongitude?: number | null;
+  hospitalLatitude?: number;
+  hospitalLongitude?: number;
 }
 
-export function HospitalCard({ hospital }: HospitalCardProps) {
+export function HospitalCard({ 
+  hospital, 
+  userLatitude, 
+  userLongitude,
+  hospitalLatitude,
+  hospitalLongitude 
+}: HospitalCardProps) {
   const hasIGD = hospital.services.list.some(
     (service) => service.toLowerCase().includes('gawat darurat') || service.toLowerCase().includes('igd')
   );
+
+  const isNearby = hospitalLatitude !== undefined && hospitalLongitude !== undefined && 
+    hospitalLatitude < 5;
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5 hover:shadow-md transition-shadow">
@@ -22,6 +36,9 @@ export function HospitalCard({ hospital }: HospitalCardProps) {
         {hasIGD && (
           <Badge variant="success">IGD 24 Jam</Badge>
         )}
+        {isNearby && (
+          <Badge variant="warning">Terdekat</Badge>
+        )}
       </div>
 
       <h3 className="font-semibold text-lg text-gray-900 mb-2">{hospital.name}</h3>
@@ -30,6 +47,13 @@ export function HospitalCard({ hospital }: HospitalCardProps) {
         <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
         <span>{hospital.address}</span>
       </div>
+
+      {hospitalLatitude !== undefined && hospitalLongitude !== undefined && (
+        <div className="flex items-center gap-2 text-sm text-blue-600 mb-4 bg-blue-50 px-3 py-2 rounded-lg">
+          <Navigation className="w-4 h-4" />
+          <span className="font-medium">{formatDistance(hospitalLatitude)}</span>
+        </div>
+      )}
 
       <div className="flex flex-wrap gap-4 text-sm text-gray-600 border-t border-gray-100 pt-4 mb-4">
         <div className="flex items-center gap-1.5">

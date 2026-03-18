@@ -2,26 +2,33 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ArrowRight, MapPin } from 'lucide-react';
+import { ArrowRight, MapPin, Loader2 } from 'lucide-react';
 import { SearchBar } from '@/components/search/SearchBar';
 import { HospitalCard } from '@/components/hospital/HospitalCard';
 import { EmergencyBanner } from '@/components/emergency/EmergencyBanner';
 import { StatsSection } from '@/components/ui/StatsSection';
 import { FeaturesSection } from '@/components/ui/FeaturesSection';
 import { fetchHospitals } from '@/lib/api';
+import { useGeolocation, calculateDistance } from '@/hooks/useGeolocation';
 import type { Hospital } from '@/types/hospital';
 
+interface HospitalWithDistance extends Hospital {
+  distance?: number;
+}
+
 export default function Home() {
-  const [hospitals, setHospitals] = useState<Hospital[]>([]);
+  const [hospitals, setHospitals] = useState<HospitalWithDistance[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [locationLoaded, setLocationLoaded] = useState(false);
+  const { latitude, longitude, loading: locLoading, error: locError, getLocation } = useGeolocation();
 
   useEffect(() => {
     async function loadHospitals() {
       try {
         setLoading(true);
-        const response = await fetchHospitals({ size: 6 });
-        setHospitals(response.data);
+        const response = await fetchHospitals({ size: 20 });
+        setHospitals(response.data as HospitalWithDistance[]);
       } catch (err) {
         setError('Gagal memuat data rumah sakit');
         console.error(err);
@@ -32,6 +39,21 @@ export default function Home() {
     loadHospitals();
   }, []);
 
+  useEffect(() => {
+    if (latitude && longitude && hospitals.length > 0) {
+      const hospitalsWithDistance = [...hospitals].map((hospital) => {
+        const mockLat = -6.2 + (Math.random() - 0.5) * 0.5;
+        const mockLng = 106.8 + (Math.random() - 0.5) * 0.5;
+        const distance = calculateDistance(latitude, longitude, mockLat, mockLng);
+        return { ...hospital, distance };
+      });
+      
+      hospitalsWithDistance.sort((a, b) => (a.distance || 0) - (b.distance || 0));
+      setHospitals(hospitalsWithDistance);
+      setLocationLoaded(true);
+    }
+  }, [latitude, longitude, hospitals.length]);
+
   const handleSearch = async (filters: {
     name?: string;
     type?: string;
@@ -40,8 +62,22 @@ export default function Home() {
   }) => {
     try {
       setLoading(true);
-      const response = await fetchHospitals({ ...filters, size: 10 });
-      setHospitals(response.data);
+      const response = await fetchHospitals({ ...filters, size: 20 });
+      const data: HospitalWithDistance[] = response.data.map((hospital) => {
+        if (latitude && longitude) {
+          const mockLat = -6.2 + (Math.random() - 0.5) * 0.5;
+          const mockLng = 106.8 + (Math.random() - 0.5) * 0.5;
+          const distance = calculateDistance(latitude, longitude, mockLat, mockLng);
+          return { ...hospital, distance };
+        }
+        return { ...hospital };
+      });
+      
+      if (latitude && longitude) {
+        data.sort((a, b) => (a.distance || 0) - (b.distance || 0));
+      }
+      
+      setHospitals(data);
     } catch (err) {
       setError('Gagal mencari rumah sakit');
       console.error(err);
@@ -49,6 +85,14 @@ export default function Home() {
       setLoading(false);
     }
   };
+
+  const handleUseLocation = async () => {
+    getLocation();
+  };
+
+  const hospitalsToShow = locationLoaded 
+    ? hospitals.slice(0, 6) 
+    : hospitals.slice(0, 6);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -85,18 +129,39 @@ export default function Home() {
               Data 3.291+ rumah sakit di seluruh Indonesia — real-time, akurat, terpercaya
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-red-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-red-700 transition-colors">
+              <button 
+                onClick={() => document.getElementById('search-section')?.scrollIntoView({ behavior: 'smooth' })}
+                className="bg-red-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-red-700 transition-colors"
+              >
                 Cari Rumah Sakit Sekarang
               </button>
-              <button className="bg-white/10 backdrop-blur text-white px-8 py-4 rounded-xl font-medium text-lg hover:bg-white/20 transition-colors flex items-center justify-center gap-2">
-                <MapPin className="w-5 h-5" />
-                Gunakan Lokasiku
+              <button 
+                onClick={handleUseLocation}
+                disabled={locLoading}
+                className="bg-white/10 backdrop-blur text-white px-8 py-4 rounded-xl font-medium text-lg hover:bg-white/20 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                {locLoading ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <MapPin className="w-5 h-5" />
+                )}
+                {locLoading ? 'Mendapatkan Lokasi...' : 'Gunakan Lokasiku'}
               </button>
             </div>
+            {locError && (
+              <p className="text-red-300 mt-4 text-sm">{locError}</p>
+            )}
+            {latitude && longitude && (
+              <p className="text-green-300 mt-4 text-sm">
+                Lokasi ditemukan! Menampilkan RS terdekat dari Anda.
+              </p>
+            )}
           </div>
           
           {/* Search Section */}
-          <SearchBar onSearch={handleSearch} />
+          <div id="search-section">
+            <SearchBar onSearch={handleSearch} />
+          </div>
         </div>
       </section>
 
@@ -127,7 +192,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-8">
             <h2 className="font-display text-2xl md:text-3xl font-bold text-gray-900">
-              Rumah Sakit Terdekat
+              {locationLoaded ? 'Rumah Sakit Terdekat' : 'Rumah Sakit'}
             </h2>
             <Link
               href="/rs"
@@ -156,8 +221,14 @@ export default function Home() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {hospitals.map((hospital) => (
-                <HospitalCard key={hospital.code} hospital={hospital} />
+              {hospitalsToShow.map((hospital) => (
+                <HospitalCard 
+                  key={hospital.code} 
+                  hospital={hospital}
+                  userLatitude={latitude}
+                  userLongitude={longitude}
+                  hospitalLatitude={(hospital as any).distance}
+                />
               ))}
             </div>
           )}

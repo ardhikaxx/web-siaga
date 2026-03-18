@@ -9,18 +9,14 @@ import { EmergencyBanner } from '@/components/emergency/EmergencyBanner';
 import { StatsSection } from '@/components/ui/StatsSection';
 import { FeaturesSection } from '@/components/ui/FeaturesSection';
 import { fetchHospitals } from '@/lib/api';
-import { useGeolocation, calculateDistance } from '@/hooks/useGeolocation';
+import { useGeolocation } from '@/hooks/useGeolocation';
 import type { Hospital } from '@/types/hospital';
 
-interface HospitalWithDistance extends Hospital {
-  distance?: number;
-}
-
 export default function Home() {
-  const [hospitals, setHospitals] = useState<HospitalWithDistance[]>([]);
+  const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [locationLoaded, setLocationLoaded] = useState(false);
+  const [locationEnabled, setLocationEnabled] = useState(false);
   const { latitude, longitude, loading: locLoading, error: locError, getLocation } = useGeolocation();
 
   useEffect(() => {
@@ -28,7 +24,7 @@ export default function Home() {
       try {
         setLoading(true);
         const response = await fetchHospitals({ size: 20 });
-        setHospitals(response.data as HospitalWithDistance[]);
+        setHospitals(response.data);
       } catch (err) {
         setError('Gagal memuat data rumah sakit');
         console.error(err);
@@ -39,21 +35,6 @@ export default function Home() {
     loadHospitals();
   }, []);
 
-  useEffect(() => {
-    if (latitude && longitude && hospitals.length > 0) {
-      const hospitalsWithDistance = [...hospitals].map((hospital) => {
-        const mockLat = -6.2 + (Math.random() - 0.5) * 0.5;
-        const mockLng = 106.8 + (Math.random() - 0.5) * 0.5;
-        const distance = calculateDistance(latitude, longitude, mockLat, mockLng);
-        return { ...hospital, distance };
-      });
-      
-      hospitalsWithDistance.sort((a, b) => (a.distance || 0) - (b.distance || 0));
-      setHospitals(hospitalsWithDistance);
-      setLocationLoaded(true);
-    }
-  }, [latitude, longitude, hospitals.length]);
-
   const handleSearch = async (filters: {
     name?: string;
     type?: string;
@@ -63,21 +44,7 @@ export default function Home() {
     try {
       setLoading(true);
       const response = await fetchHospitals({ ...filters, size: 20 });
-      const data: HospitalWithDistance[] = response.data.map((hospital) => {
-        if (latitude && longitude) {
-          const mockLat = -6.2 + (Math.random() - 0.5) * 0.5;
-          const mockLng = 106.8 + (Math.random() - 0.5) * 0.5;
-          const distance = calculateDistance(latitude, longitude, mockLat, mockLng);
-          return { ...hospital, distance };
-        }
-        return { ...hospital };
-      });
-      
-      if (latitude && longitude) {
-        data.sort((a, b) => (a.distance || 0) - (b.distance || 0));
-      }
-      
-      setHospitals(data);
+      setHospitals(response.data);
     } catch (err) {
       setError('Gagal mencari rumah sakit');
       console.error(err);
@@ -88,11 +55,10 @@ export default function Home() {
 
   const handleUseLocation = async () => {
     getLocation();
+    setLocationEnabled(true);
   };
 
-  const hospitalsToShow = locationLoaded 
-    ? hospitals.slice(0, 6) 
-    : hospitals.slice(0, 6);
+  const hospitalsToShow = hospitals.slice(0, 6);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -153,7 +119,7 @@ export default function Home() {
             )}
             {latitude && longitude && (
               <p className="text-green-300 mt-4 text-sm">
-                Lokasi ditemukan! Menampilkan RS terdekat dari Anda.
+                Lokasi ditemukan! Menampilkan rumah sakit di sekitar Anda.
               </p>
             )}
           </div>
@@ -192,7 +158,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-8">
             <h2 className="font-display text-2xl md:text-3xl font-bold text-gray-900">
-              {locationLoaded ? 'Rumah Sakit Terdekat' : 'Rumah Sakit'}
+              {locationEnabled ? 'Rumah Sakit Terdekat' : 'Rumah Sakit'}
             </h2>
             <Link
               href="/rs"
@@ -225,9 +191,6 @@ export default function Home() {
                 <HospitalCard 
                   key={hospital.code} 
                   hospital={hospital}
-                  userLatitude={latitude}
-                  userLongitude={longitude}
-                  hospitalLatitude={(hospital as any).distance}
                 />
               ))}
             </div>

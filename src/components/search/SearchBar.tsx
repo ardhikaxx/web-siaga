@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Search, MapPin, Filter, X } from 'lucide-react';
+import { Search, Filter, X } from 'lucide-react';
 import { fetchHospitalTypes, fetchHospitalClasses, fetchHospitalOwnership } from '@/lib/api';
 
 interface SearchBarProps {
@@ -61,25 +61,25 @@ export function SearchBar({ onSearch }: SearchBarProps) {
   const hasFilters = name || type || hospitalClass || ownership;
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6">
+    <div className="bg-white rounded-2xl shadow-xl shadow-slate-900/10 p-6 md:p-8">
       <div className="flex flex-col md:flex-row gap-4">
         <div className="flex-1 relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
           <input
             type="text"
             placeholder="Cari nama rumah sakit..."
             value={name}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-            className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full pl-12 pr-4 py-4 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-slate-50"
           />
         </div>
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className={`flex items-center justify-center gap-2 px-5 py-3 rounded-lg font-medium transition-colors ${
+          className={`flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold transition-all ${
             showFilters || hasFilters
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25'
+              : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
           }`}
         >
           <Filter className="w-5 h-5" />
@@ -87,21 +87,21 @@ export function SearchBar({ onSearch }: SearchBarProps) {
         </button>
         <button
           onClick={handleSearch}
-          className="bg-red-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-red-700 transition-colors"
+          className="bg-gradient-to-r from-red-500 to-red-600 text-white px-8 py-4 rounded-xl font-semibold hover:from-red-600 hover:to-red-700 transition-all shadow-lg shadow-red-500/25"
         >
           Cari RS
         </button>
       </div>
 
       {showFilters && (
-        <div className="mt-4 pt-4 border-t border-gray-100">
+        <div className="mt-6 pt-6 border-t border-slate-100">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Jenis RS</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">Jenis RS</label>
               <select
                 value={type}
                 onChange={(e) => setType(e.target.value)}
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 bg-slate-50"
               >
                 <option value="">Semua Jenis</option>
                 {types.map((t) => (
@@ -110,11 +110,11 @@ export function SearchBar({ onSearch }: SearchBarProps) {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Kelas RS</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">Kelas RS</label>
               <select
                 value={hospitalClass}
                 onChange={(e) => setHospitalClass(e.target.value)}
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 bg-slate-50"
               >
                 <option value="">Semua Kelas</option>
                 {classes.map((c) => (
@@ -123,11 +123,11 @@ export function SearchBar({ onSearch }: SearchBarProps) {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Kepemilikan</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">Kepemilikan</label>
               <select
                 value={ownership}
                 onChange={(e) => setOwnership(e.target.value)}
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 bg-slate-50"
               >
                 <option value="">Semua Kepemilikan</option>
                 {ownerships.map((o) => (
@@ -139,7 +139,7 @@ export function SearchBar({ onSearch }: SearchBarProps) {
           {hasFilters && (
             <button
               onClick={handleClear}
-              className="mt-4 flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
+              className="mt-4 flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-700"
             >
               <X className="w-4 h-4" />
               Clear filters

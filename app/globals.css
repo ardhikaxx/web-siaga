@@ -2,15 +2,22 @@
 
 :root {
   --color-emergency: #DC2626;
-  --color-primary: #1D4ED8;
+  --color-primary: #2563EB;
+  --color-primary-dark: #1D4ED8;
   --color-accent: #F59E0B;
   --color-success: #16A34A;
   --color-neutral-900: #0F172A;
+  --color-neutral-800: #1E293B;
+  --color-neutral-700: #334155;
+  --color-neutral-600: #475569;
+  --color-neutral-400: #94A3B8;
+  --color-neutral-200: #E2E8F0;
   --color-neutral-100: #F1F5F9;
   --color-white: #FFFFFF;
   
-  --background: #F1F5F9;
+  --background: #F8FAFC;
   --foreground: #0F172A;
+  --card-bg: #FFFFFF;
 }
 
 @theme inline {
@@ -18,14 +25,89 @@
   --color-foreground: var(--foreground);
   --color-emergency: var(--color-emergency);
   --color-primary: var(--color-primary);
+  --color-primary-dark: var(--color-primary-dark);
   --color-accent: var(--color-accent);
   --color-success: var(--color-success);
   --font-sans: var(--font-plus-jakarta), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-dm-serif), ui-serif, Georgia, serif;
 }
 
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-neutral-400) transparent;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.glass-effect {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.gradient-primary {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+}
+
+.gradient-emergency {
+  background: linear-gradient(135deg, #DC2626 0%, #B91C1C 100%);
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-pulse-slow {
+  animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+input:focus, select:focus, button:focus {
+  outline: none;
+}
+
+.btn-primary {
+  @apply bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200;
+}
+
+.btn-primary:hover {
+  @apply bg-blue-700 shadow-lg shadow-blue-600/25;
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  @apply bg-white text-gray-700 border border-gray-200 px-6 py-3 rounded-xl font-semibold transition-all duration-200;
+}
+
+.btn-secondary:hover {
+  @apply bg-gray-50 border-gray-300;
+  transform: translateY(-2px);
+}
+
+.btn-emergency {
+  @apply bg-red-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200;
+}
+
+.btn-emergency:hover {
+  @apply bg-red-700 shadow-lg shadow-red-600/25;
+  transform: translateY(-2px);
 }

@@ -15,6 +15,10 @@ const headers = {
   'Content-Type': 'application/json',
 };
 
+const defaultTypes = ['Rumah Sakit Umum', 'Rumah Sakit Khusus', 'Rumah Sakit Jiwa', 'Rumah Sakit Ibu dan Anak'];
+const defaultClasses = ['A', 'B', 'C', 'D'];
+const defaultOwnership = ['Pemkab', 'Pemkot', 'Pemprov', 'Swasta', 'TNI/Polri'];
+
 export async function fetchHospitals(options: FilterOptions = {}): Promise<HospitalListResponse> {
   const params = new URLSearchParams();
   
@@ -29,7 +33,7 @@ export async function fetchHospitals(options: FilterOptions = {}): Promise<Hospi
 
   const response = await fetch(
     `${API_BASE_URL}/hospitals/indonesia/?${params.toString()}`,
-    { headers, next: { revalidate: 300 } }
+    { headers }
   );
 
   if (!response.ok) {
@@ -44,7 +48,7 @@ export async function fetchHospitals(options: FilterOptions = {}): Promise<Hospi
 export async function fetchHospitalByCode(code: string): Promise<HospitalDetailResponse> {
   const response = await fetch(
     `${API_BASE_URL}/hospitals/indonesia/${code}/`,
-    { headers, next: { revalidate: 300 } }
+    { headers }
   );
 
   if (!response.ok) {
@@ -58,73 +62,73 @@ export async function fetchHospitalTypes(): Promise<TypesResponse> {
   try {
     const response = await fetch(
       `${API_BASE_URL}/hospitals/indonesia/types`,
-      { headers, next: { revalidate: 3600 } }
+      { headers }
     );
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch hospital types');
+    if (response.ok) {
+      const data = await response.json();
+      return data;
     }
-
-    return response.json();
   } catch (error) {
-    console.error('Error fetching types:', error);
-    return {
-      is_success: true,
-      message: 'Success (fallback)',
-      data: {
-        types: ['Rumah Sakit Umum', 'Rumah Sakit Khusus', 'Rumah Sakit Jiwa', 'Rumah Sakit Ibu dan Anak'],
-        count: 4
-      }
-    };
+    console.warn('fetchHospitalTypes failed, using fallback:', error);
   }
+  
+  return {
+    is_success: true,
+    message: 'Success (fallback)',
+    data: {
+      types: defaultTypes,
+      count: defaultTypes.length
+    }
+  };
 }
 
 export async function fetchHospitalClasses(): Promise<ClassesResponse> {
   try {
     const response = await fetch(
       `${API_BASE_URL}/hospitals/indonesia/classes`,
-      { headers, next: { revalidate: 3600 } }
+      { headers }
     );
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch hospital classes');
+    if (response.ok) {
+      const data = await response.json();
+      return data;
     }
-
-    return response.json();
   } catch (error) {
-    console.error('Error fetching classes:', error);
-    return {
-      is_success: true,
-      message: 'Success (fallback)',
-      data: {
-        classes: ['A', 'B', 'C', 'D'],
-        count: 4
-      }
-    };
+    console.warn('fetchHospitalClasses failed, using fallback:', error);
   }
+  
+  return {
+    is_success: true,
+    message: 'Success (fallback)',
+    data: {
+      classes: defaultClasses,
+      count: defaultClasses.length
+    }
+  };
 }
 
 export async function fetchHospitalOwnership(): Promise<OwnershipResponse> {
   try {
     const response = await fetch(
       `${API_BASE_URL}/hospitals/indonesia/ownership`,
-      { headers, next: { revalidate: 3600 } }
+      { headers }
     );
 
-    if (!response.ok) {
-      throw new Error('Failed to fetch ownership types');
+    if (response.ok) {
+      const data = await response.json();
+      return data;
     }
-
-    return response.json();
   } catch (error) {
-    console.error('Error fetching ownership:', error);
-    return {
-      is_success: true,
-      message: 'Success (fallback)',
-      data: {
-        ownership: ['Pemkab', 'Pemkot', 'Pemprov', 'Swasta', 'TNI/Polri'],
-        count: 5
-      }
-    };
+    console.warn('fetchHospitalOwnership failed, using fallback:', error);
   }
+  
+  return {
+    is_success: true,
+    message: 'Success (fallback)',
+    data: {
+      ownership: defaultOwnership,
+      count: defaultOwnership.length
+    }
+  };
 }

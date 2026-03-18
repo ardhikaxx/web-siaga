@@ -9,10 +9,10 @@ const stats = {
 };
 
 const statItems = [
-  { icon: Building2, value: stats.hospitals, label: 'Rumah Sakit', suffix: '+' },
-  { icon: MapPin, value: stats.provinces, label: 'Provinsi', suffix: '' },
-  { icon: Bed, value: stats.beds, label: 'Tempat Tidur', suffix: '+' },
-  { icon: Clock, value: '24/7', label: 'Akses Informasi', suffix: '' },
+  { icon: Building2, value: stats.hospitals, label: 'Rumah Sakit', suffix: '+', color: '#0D9488' },
+  { icon: MapPin, value: stats.provinces, label: 'Provinsi', suffix: '', color: '#6366F1' },
+  { icon: Bed, value: stats.beds, label: 'Tempat Tidur', suffix: '+', color: '#F59E0B' },
+  { icon: Clock, value: '24/7', label: 'Akses Informasi', suffix: '', color: '#DC2626' },
 ];
 
 export function StatsSection() {
@@ -21,14 +21,17 @@ export function StatsSection() {
       {statItems.map((item, index) => (
         <div
           key={index}
-          className="bg-white rounded-xl p-5 text-center border border-gray-100 hover:shadow-md transition-shadow"
+          className="card p-5 text-center hover:shadow-xl transition-all"
         >
-          <item.icon className="w-8 h-8 mx-auto mb-3 text-blue-600" />
-          <div className="text-3xl font-bold text-gray-900 mb-1">
+          <div className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3" 
+            style={{ background: `${item.color}15` }}>
+            <item.icon className="w-6 h-6" style={{ color: item.color }} />
+          </div>
+          <div className="text-3xl font-bold mb-1" style={{ color: '#1E293B' }}>
             {item.value}
             {item.suffix}
           </div>
-          <div className="text-gray-600 text-sm">{item.label}</div>
+          <div className="text-sm" style={{ color: '#64748B' }}>{item.label}</div>
         </div>
       ))}
     </div>

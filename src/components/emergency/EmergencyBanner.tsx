@@ -3,8 +3,18 @@ import { Phone, AlertTriangle, ArrowRight } from 'lucide-react';
 
 export function EmergencyBanner() {
   return (
-    <div className="bg-gradient-to-r from-red-600 to-red-700 text-white rounded-2xl p-8 md:p-10 shadow-xl shadow-red-600/20">
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+    <div className="relative overflow-hidden rounded-2xl p-8 md:p-10" 
+      style={{ 
+        background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 50%, #991B1B 100%)',
+        boxShadow: '0 25px 50px -12px rgba(220, 38, 38, 0.4)'
+      }}>
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `radial-gradient(circle at 20% 50%, rgba(255,255,255,0.3) 0%, transparent 50%), radial-gradient(circle at 80% 50%, rgba(255,255,255,0.2) 0%, transparent 50%)`,
+        }} />
+      </div>
+      
+      <div className="relative flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
         <div className="flex items-start gap-5">
           <div className="bg-white/20 p-4 rounded-2xl backdrop-blur">
             <AlertTriangle className="w-10 h-10" />
@@ -26,7 +36,7 @@ export function EmergencyBanner() {
           </a>
           <Link
             href="/darurat"
-            className="flex items-center justify-center gap-3 bg-red-800/50 backdrop-blur text-white px-8 py-4 rounded-xl font-semibold hover:bg-red-800/70 transition-all"
+            className="flex items-center justify-center gap-3 bg-white/20 backdrop-blur text-white px-8 py-4 rounded-xl font-semibold hover:bg-white/30 transition-all"
           >
             Panduan Darurat
             <ArrowRight className="w-5 h-5" />

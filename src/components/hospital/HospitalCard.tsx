@@ -13,7 +13,7 @@ export function HospitalCard({ hospital }: HospitalCardProps) {
   );
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 hover:shadow-lg hover:shadow-slate-900/10 transition-all duration-300 hover:-translate-y-1">
+    <div className="card p-6 hover:shadow-2xl" style={{ boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
       <div className="flex flex-wrap gap-2 mb-4">
         <Badge variant={getClassBadgeVariant(hospital.class)}>
           Kelas {hospital.class}
@@ -24,38 +24,38 @@ export function HospitalCard({ hospital }: HospitalCardProps) {
         )}
       </div>
 
-      <h3 className="font-bold text-lg text-slate-900 mb-3 line-clamp-2">{hospital.name}</h3>
+      <h3 className="font-bold text-lg mb-3 line-clamp-2" style={{ color: '#1E293B' }}>{hospital.name}</h3>
       
-      <div className="flex items-start gap-2 text-slate-600 text-sm mb-5">
-        <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-blue-500" />
+      <div className="flex items-start gap-2 text-sm mb-5" style={{ color: '#64748B' }}>
+        <MapPin className="w-4 h-4 mt-0.5 shrink-0" style={{ color: '#0D9488' }} />
         <span className="line-clamp-2">{hospital.address}</span>
       </div>
 
-      <div className="flex flex-wrap gap-4 text-sm text-slate-500 border-t border-slate-100 pt-4 mb-5">
+      <div className="flex flex-wrap gap-4 text-sm border-t pt-4 mb-5" style={{ borderColor: '#E2E8F0', color: '#64748B' }}>
         <div className="flex items-center gap-2">
-          <div className="bg-blue-50 p-2 rounded-lg">
-            <Bed className="w-4 h-4 text-blue-600" />
+          <div className="p-2 rounded-lg" style={{ background: 'rgba(13, 148, 136, 0.1)' }}>
+            <Bed className="w-4 h-4" style={{ color: '#0D9488' }} />
           </div>
           <div>
-            <span className="font-semibold text-slate-900">{hospital.facilities.total_beds}</span>
+            <span className="font-semibold" style={{ color: '#1E293B' }}>{hospital.facilities.total_beds}</span>
             <span className="ml-1">Bed</span>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <div className="bg-green-50 p-2 rounded-lg">
-            <Users className="w-4 h-4 text-green-600" />
+          <div className="p-2 rounded-lg" style={{ background: 'rgba(99, 102, 241, 0.1)' }}>
+            <Users className="w-4 h-4" style={{ color: '#6366F1' }} />
           </div>
           <div>
-            <span className="font-semibold text-slate-900">{hospital.staff.total}</span>
+            <span className="font-semibold" style={{ color: '#1E293B' }}>{hospital.staff.total}</span>
             <span className="ml-1">Staff</span>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <div className="bg-purple-50 p-2 rounded-lg">
-            <Building2 className="w-4 h-4 text-purple-600" />
+          <div className="p-2 rounded-lg" style={{ background: 'rgba(245, 158, 11, 0.1)' }}>
+            <Building2 className="w-4 h-4" style={{ color: '#F59E0B' }} />
           </div>
           <div>
-            <span className="font-semibold text-slate-900">{hospital.services.count}</span>
+            <span className="font-semibold" style={{ color: '#1E293B' }}>{hospital.services.count}</span>
             <span className="ml-1">Layanan</span>
           </div>
         </div>
@@ -65,7 +65,8 @@ export function HospitalCard({ hospital }: HospitalCardProps) {
         {hospital.phone && (
           <a
             href={`tel:${hospital.phone}`}
-            className="flex-1 flex items-center justify-center gap-2 bg-blue-600 text-white py-3 px-4 rounded-xl font-semibold hover:bg-blue-700 transition-colors"
+            className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-semibold transition-colors"
+            style={{ background: '#0D9488', color: 'white' }}
           >
             <Phone className="w-4 h-4" />
             Hubungi
@@ -73,7 +74,8 @@ export function HospitalCard({ hospital }: HospitalCardProps) {
         )}
         <Link
           href={`/rs/${hospital.code}`}
-          className="flex-1 flex items-center justify-center gap-2 bg-slate-100 text-slate-900 py-3 px-4 rounded-xl font-semibold hover:bg-slate-200 transition-colors"
+          className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-semibold transition-colors"
+          style={{ background: '#F1F5F9', color: '#1E293B' }}
         >
           Detail
           <ArrowRight className="w-4 h-4" />

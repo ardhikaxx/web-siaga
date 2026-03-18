@@ -61,47 +61,53 @@ export function SearchBar({ onSearch }: SearchBarProps) {
   const hasFilters = name || type || hospitalClass || ownership;
 
   return (
-    <div className="bg-white rounded-2xl shadow-xl shadow-slate-900/10 p-6 md:p-8">
+    <div className="card p-6 md:p-8 shadow-xl" style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' }}>
       <div className="flex flex-col md:flex-row gap-4">
         <div className="flex-1 relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: '#94A3B8' }} />
           <input
             type="text"
             placeholder="Cari nama rumah sakit..."
             value={name}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-            className="w-full pl-12 pr-4 py-4 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-slate-50"
+            className="w-full pl-12 pr-4 py-4 rounded-xl text-base transition-all"
+            style={{ 
+              border: '1px solid var(--color-border)', 
+              background: '#F8FAFC',
+              color: '#1E293B'
+            }}
           />
         </div>
         <button
           onClick={() => setShowFilters(!showFilters)}
-          className={`flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold transition-all ${
-            showFilters || hasFilters
-              ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25'
-              : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-          }`}
+          className="flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold transition-all"
+          style={{
+            background: showFilters || hasFilters ? '#0D9488' : '#F1F5F9',
+            color: showFilters || hasFilters ? 'white' : '#64748B'
+          }}
         >
           <Filter className="w-5 h-5" />
           Filter
         </button>
         <button
           onClick={handleSearch}
-          className="bg-gradient-to-r from-red-500 to-red-600 text-white px-8 py-4 rounded-xl font-semibold hover:from-red-600 hover:to-red-700 transition-all shadow-lg shadow-red-500/25"
+          className="btn-emergency px-8 py-4"
         >
           Cari RS
         </button>
       </div>
 
       {showFilters && (
-        <div className="mt-6 pt-6 border-t border-slate-100">
+        <div className="mt-6 pt-6" style={{ borderTop: '1px solid var(--color-border)' }}>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">Jenis RS</label>
+              <label className="block text-sm font-semibold mb-2" style={{ color: '#374151' }}>Jenis RS</label>
               <select
                 value={type}
                 onChange={(e) => setType(e.target.value)}
-                className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 bg-slate-50"
+                className="w-full px-4 py-3 rounded-xl transition-all"
+                style={{ border: '1px solid var(--color-border)', background: '#F8FAFC' }}
               >
                 <option value="">Semua Jenis</option>
                 {types.map((t) => (
@@ -110,11 +116,12 @@ export function SearchBar({ onSearch }: SearchBarProps) {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">Kelas RS</label>
+              <label className="block text-sm font-semibold mb-2" style={{ color: '#374151' }}>Kelas RS</label>
               <select
                 value={hospitalClass}
                 onChange={(e) => setHospitalClass(e.target.value)}
-                className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 bg-slate-50"
+                className="w-full px-4 py-3 rounded-xl transition-all"
+                style={{ border: '1px solid var(--color-border)', background: '#F8FAFC' }}
               >
                 <option value="">Semua Kelas</option>
                 {classes.map((c) => (
@@ -123,11 +130,12 @@ export function SearchBar({ onSearch }: SearchBarProps) {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-2">Kepemilikan</label>
+              <label className="block text-sm font-semibold mb-2" style={{ color: '#374151' }}>Kepemilikan</label>
               <select
                 value={ownership}
                 onChange={(e) => setOwnership(e.target.value)}
-                className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 bg-slate-50"
+                className="w-full px-4 py-3 rounded-xl transition-all"
+                style={{ border: '1px solid var(--color-border)', background: '#F8FAFC' }}
               >
                 <option value="">Semua Kepemilikan</option>
                 {ownerships.map((o) => (
@@ -139,7 +147,8 @@ export function SearchBar({ onSearch }: SearchBarProps) {
           {hasFilters && (
             <button
               onClick={handleClear}
-              className="mt-4 flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-700"
+              className="mt-4 flex items-center gap-2 text-sm font-medium transition-colors hover:opacity-80"
+              style={{ color: '#64748B' }}
             >
               <X className="w-4 h-4" />
               Clear filters

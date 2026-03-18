@@ -5,25 +5,29 @@ const features = [
     icon: Search,
     title: 'Cari Cepat',
     description: 'Filter RS berdasarkan lokasi, jenis, kelas, dan layanan',
-    color: 'bg-blue-50 text-blue-600',
+    color: '#0D9488',
+    bg: 'rgba(13, 148, 136, 0.1)',
   },
   {
     icon: MapPin,
     title: 'Deteksi Lokasi',
     description: 'Temukan RS terdekat dari posisi Anda sekarang',
-    color: 'bg-green-50 text-green-600',
+    color: '#6366F1',
+    bg: 'rgba(99, 102, 241, 0.1)',
   },
   {
     icon: Bed,
     title: 'Info Kapasitas',
     description: 'Lihat jumlah tempat tidur, ICU, dan HCU tersedia',
-    color: 'bg-purple-50 text-purple-600',
+    color: '#F59E0B',
+    bg: 'rgba(245, 158, 11, 0.1)',
   },
   {
     icon: Phone,
     title: 'Hubungi Langsung',
     description: 'Tap-to-call nomor RS tanpa perlu copy-paste',
-    color: 'bg-red-50 text-red-600',
+    color: '#DC2626',
+    bg: 'rgba(220, 38, 38, 0.1)',
   },
 ];
 
@@ -33,13 +37,13 @@ export function FeaturesSection() {
       {features.map((feature, index) => (
         <div
           key={index}
-          className="bg-white rounded-2xl p-6 border border-slate-200 hover:shadow-lg hover:shadow-slate-900/10 transition-all duration-300 hover:-translate-y-1"
+          className="card p-6 hover:shadow-xl"
         >
-          <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-4 ${feature.color}`}>
-            <feature.icon className="w-7 h-7" />
+          <div className="w-14 h-14 rounded-xl flex items-center justify-center mb-4" style={{ background: feature.bg }}>
+            <feature.icon className="w-7 h-7" style={{ color: feature.color }} />
           </div>
-          <h3 className="font-bold text-lg text-slate-900 mb-2">{feature.title}</h3>
-          <p className="text-slate-600 text-sm leading-relaxed">{feature.description}</p>
+          <h3 className="font-bold text-lg mb-2" style={{ color: '#1E293B' }}>{feature.title}</h3>
+          <p className="text-sm leading-relaxed" style={{ color: '#64748B' }}>{feature.description}</p>
         </div>
       ))}
     </div>
